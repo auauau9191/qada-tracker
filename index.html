@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Qada">
-<title>Qada tracker</title>
+<meta name="apple-mobile-web-app-title" content="Qazo">
+<title>Qazo namozlari</title>
 <style>
 :root{--bg:#f6f5f1;--card:#fff;--soft:#efede6;--text:#1f1f1d;--muted:#6b6a64;--line:rgba(0,0,0,.1);--accent:#1d6b52;--on-accent:#fff;--ok-bg:#e3f2ea;--ok:#1d6b52;--err:#b3261e;--warn:#8a5a00}
 @media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--soft:#30302d;--text:#f1f0ec;--muted:#a3a29b;--line:rgba(255,255,255,.12);--accent:#3fa37f;--on-accent:#0d1f18;--ok-bg:#1f3a2f;--ok:#7fd3b0;--err:#f2958f;--warn:#e7b65a}}
@@ -55,118 +55,120 @@ textarea{font-size:13px;font-family:ui-monospace,Menlo,monospace}
 </head>
 <body>
 <main>
-  <div class="top"><h1>Qada tracker</h1><div class="sync" id="sync"></div></div>
-  <div class="tabs"><button id="t-me" class="on">Tracker</button><button id="t-set">Settings</button></div>
+  <div class="top"><h1>Qazo namozlari</h1><div class="sync" id="sync"></div></div>
+  <div class="tabs"><button id="t-me" class="on">Hisob</button><button id="t-set">Sozlamalar</button></div>
 
-  <!-- Tracker -->
+  <!-- Hisob -->
   <section id="v-me">
     <div id="welcome" class="card hide">
-      <h2>Welcome</h2>
-      <p class="note">Enter your details below to set up your tracker. Your record is saved to your own private repository.</p>
+      <h2>Xush kelibsiz</h2>
+      <p class="note">Hisobni boshlash uchun quyidagi maʼlumotlarni kiriting. Hisobingiz shaxsiy omboringizga (repository) saqlanadi.</p>
     </div>
     <div id="slot-me"></div>
     <div id="mine" class="hide">
       <p class="l" id="mename" style="margin-bottom:8px"></p>
       <div class="grid">
-        <div class="m"><p class="l">Remaining</p><p class="v" id="mr">0</p></div>
-        <div class="m"><p class="l">Made up</p><p class="v" id="md">0</p></div>
+        <div class="m"><p class="l">Qolgan</p><p class="v" id="mr">0</p></div>
+        <div class="m"><p class="l">Ado etilgan</p><p class="v" id="md">0</p></div>
       </div>
       <div class="bar"><div id="bar"></div></div>
       <p class="note" id="mp" style="margin:0 0 12px"></p>
       <div class="card" id="ordered">
-        <p class="l">Next to make up</p>
-        <p class="next" id="nx">Fajr</p>
+        <p class="l">Navbatdagi qazo</p>
+        <p class="next" id="nx">Bomdod</p>
         <p class="sub" id="nd"></p>
         <div class="dots" id="dots"></div>
-        <button class="primary" id="b1">Mark prayed</button>
-        <div class="row"><button id="bday">Full day</button><button id="bu">Undo</button></div>
+        <button class="primary" id="b1">Oʻqidim</button>
+        <div class="row"><button id="bday">Butun kun</button><button id="bu">Bekor qilish</button></div>
       </div>
       <div class="card" id="flex">
         <div id="rows"></div>
-        <div class="row"><button class="primary" id="fday">Full day</button></div>
-        <div class="row"><button id="fu">Undo last</button></div>
+        <div class="row"><button class="primary" id="fday">Butun kun</button></div>
+        <div class="row"><button id="fu">Oxirgisini bekor qilish</button></div>
       </div>
       <div class="grid">
-        <div class="m"><p class="l">Today</p><p class="v" id="td">0</p></div>
-        <div class="m"><p class="l">Streak (days)</p><p class="v" id="sk">0</p></div>
+        <div class="m"><p class="l">Bugun</p><p class="v" id="td">0</p></div>
+        <div class="m"><p class="l">Ketma-ket kunlar</p><p class="v" id="sk">0</p></div>
       </div>
-      <div class="card"><p class="l">Finish at your pace</p><p class="v" id="fd" style="font-size:18px">-</p></div>
+      <div class="card"><p class="l">Shu surʼatda tugatish</p><p class="v" id="fd" style="font-size:18px">-</p></div>
     </div>
   </section>
 
-  <!-- Settings -->
+  <!-- Sozlamalar -->
   <section id="v-set" class="hide">
     <div id="slot-set"></div>
     <div class="card">
-      <h2>GitHub sync</h2>
-      <label>GitHub username (owner)<input id="gu" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="yourname"></label>
-      <label>Repository<input id="gr" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-yourname"></label>
-      <label>Branch<input id="gb" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="main"></label>
-      <label>Access key (token)<input id="gt" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
+      <h2>GitHub bilan sinxronlash</h2>
+      <label>GitHub foydalanuvchi nomi (egasi)<input id="gu" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ismingiz"></label>
+      <label>Ombor (repository)<input id="gr" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-ism"></label>
+      <label>Tarmoq (branch)<input id="gb" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="main"></label>
+      <label>Kirish kaliti (token)<input id="gt" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
       <p class="msg" id="smsg"></p>
-      <div class="row"><button id="gsave">Save and connect</button><button id="gdis">Disconnect</button></div>
+      <div class="row"><button id="gsave">Saqlash va ulash</button><button id="gdis">Uzish</button></div>
     </div>
     <div class="card">
-      <h2>Join with an invite</h2>
-      <label>Paste the invite link you were sent<textarea id="invin" rows="2"></textarea></label>
-      <div class="row"><button id="invjoin">Join</button></div>
+      <h2>Taklif orqali qoʻshilish</h2>
+      <label>Sizga yuborilgan taklif havolasini shu yerga qoʻying<textarea id="invin" rows="2"></textarea></label>
+      <div class="row"><button id="invjoin">Qoʻshilish</button></div>
       <p class="msg" id="jmsg"></p>
     </div>
     <div class="card">
-      <h2>Make an invite for a family member</h2>
-      <p class="note">Use that person's own repository and key. Send the link only to them, privately.</p>
-      <label>GitHub username (owner)<input id="iu" autocapitalize="off" autocorrect="off" spellcheck="false"></label>
-      <label>Their repository<input id="ir" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-name"></label>
-      <label>Their access key<input id="it" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
-      <div class="row"><button id="imake">Create invite link</button></div>
+      <h2>Oila aʼzosi uchun taklif yaratish</h2>
+      <p class="note">Oʻsha odamning oʻz ombori va kalitidan foydalaning. Havolani faqat unga, shaxsan yuboring.</p>
+      <label>GitHub foydalanuvchi nomi (egasi)<input id="iu" autocapitalize="off" autocorrect="off" spellcheck="false"></label>
+      <label>Uning ombori<input id="ir" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-ism"></label>
+      <label>Uning kirish kaliti<input id="it" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
+      <div class="row"><button id="imake">Taklif havolasini yaratish</button></div>
       <textarea id="iout" rows="3" readonly class="hide" style="margin-top:8px"></textarea>
       <p class="msg" id="imsg"></p>
     </div>
     <div class="card">
-      <h2>Backup</h2>
-      <div class="row"><button id="bexp">Download my record</button></div>
+      <h2>Zaxira nusxa</h2>
+      <div class="row"><button id="bexp">Hisobimni yuklab olish</button></div>
     </div>
   </section>
 
-  <!-- Details form (moved between tabs) -->
+  <!-- Maʼlumotlar shakli (boʻlimlar orasida koʻchadi) -->
   <div id="details" class="card">
-    <h2>Your details</h2>
-    <label>Your name (optional)<input id="d-name" maxlength="40"></label>
-    <label>Gender<select id="d-gender"><option value="m">Male</option><option value="f">Female</option></select></label>
-    <label>Date of birth<input type="date" id="d-birth"></label>
-    <label>Start date based on<select id="d-basis">
-      <option value="hanafi">Hanafi minimum age</option>
-      <option value="hanbali">Hanbali minimum age</option>
-      <option value="shafii">Shafi'i minimum age</option>
-      <option value="maliki">Maliki minimum age</option>
-      <option value="custom">I'll pick the start date</option>
+    <h2>Maʼlumotlaringiz</h2>
+    <label>Ismingiz (ixtiyoriy)<input id="d-name" maxlength="40"></label>
+    <label>Jinsi<select id="d-gender"><option value="m">Erkak</option><option value="f">Ayol</option></select></label>
+    <label>Tugʻilgan sana<input type="date" id="d-birth"></label>
+    <label>Boshlanish sanasi qaysi mazhab boʻyicha<select id="d-basis">
+      <option value="hanafi">Hanafiy: eng kichik balogʻat yoshi</option>
+      <option value="hanbali">Hanbaliy: eng kichik balogʻat yoshi</option>
+      <option value="shafii">Shofeiy: eng kichik balogʻat yoshi</option>
+      <option value="maliki">Molikiy: eng kichik balogʻat yoshi</option>
+      <option value="custom">Sanani oʻzim tanlayman</option>
     </select></label>
-    <label>Start date<input type="date" id="d-start"></label>
-    <label>End date (the last day you missed prayers)<input type="date" id="d-end"></label>
-    <label>How to make up<select id="d-mode">
-      <option value="ordered">In order, day by day</option>
-      <option value="flexible">Any order, count each prayer</option>
+    <label>Boshlanish sanasi<input type="date" id="d-start"></label>
+    <label>Tugash sanasi (namoz qoldirilgan oxirgi kun)<input type="date" id="d-end"></label>
+    <label>Qazo qilish tartibi<select id="d-mode">
+      <option value="ordered">Tartib bilan, kunma-kun</option>
+      <option value="flexible">Ixtiyoriy tartibda, har bir namozni alohida sanash</option>
     </select></label>
-    <label class="chk"><input type="checkbox" id="d-witr"> Include witr</label>
+    <label class="chk"><input type="checkbox" id="d-witr"> Vitrni qoʻshish</label>
     <div id="d-women">
-      <label>Period days per month (excluded)<input type="number" id="d-period" min="0" max="15" step="1" inputmode="numeric"></label>
-      <label>Post-natal bleeding days in total (excluded)<input type="number" id="d-nifas" min="0" max="3000" step="1" inputmode="numeric"></label>
+      <label>Oylik hayz kunlari (hisobdan chiqariladi)<input type="number" id="d-period" min="0" max="15" step="1" inputmode="numeric"></label>
+      <label>Nifos kunlari, jami (hisobdan chiqariladi)<input type="number" id="d-nifas" min="0" max="3000" step="1" inputmode="numeric"></label>
     </div>
-    <label>Qada prayers per day (for the estimate)<input type="number" id="d-goal" min="1" max="200" step="1" inputmode="numeric"></label>
+    <label>Kuniga qazo namozlari soni (taxmin uchun)<input type="number" id="d-goal" min="1" max="200" step="1" inputmode="numeric"></label>
     <p class="note" id="d-total"></p>
     <p class="msg" id="d-msg"></p>
-    <div class="row"><button class="primary" id="d-save" style="font-size:16px;padding:12px">Start tracking</button></div>
+    <div class="row"><button class="primary" id="d-save" style="font-size:16px;padding:12px">Hisobni boshlash</button></div>
   </div>
 </main>
 
 <script>
-const NAMES=['Fajr','Dhuhr','Asr','Maghrib','Isha','Witr'],RAK=[2,4,4,3,4,3];
+const NAMES=['Bomdod','Peshin','Asr','Shom','Xufton','Vitr'],RAK=[2,4,4,3,4,3];
+const OY=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
+const HAFTA=['yakshanba','dushanba','seshanba','chorshanba','payshanba','juma','shanba'];
 const LUNAR=354.367,MIN_AGE={hanafi:{m:12,f:9},hanbali:{m:10,f:9},shafii:{m:9,f:9},maliki:{m:9,f:9}};
 const SET_F=['name','gender','birth','basis','start','end','mode','witr','period','nifas','goal'];
 const PROG_F=['done','counts','log','hist'];
 const STORE='qada_solo_v3',CFG='qada_cfg_v3',PATH='qada-progress.json';
 const $=id=>document.getElementById(id);
-const num=n=>Math.round(n).toLocaleString();
+const num=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0');
 
 function ls(k,d){try{const r=localStorage.getItem(k);return r?JSON.parse(r):d}catch(e){return d}}
 let L=Object.assign({m:null,dirty:false},ls(STORE,{}));
@@ -175,11 +177,13 @@ let sha,busy=false,again=null,timer=null,retry=null,rev=0,tab='me';
 function persist(){try{localStorage.setItem(STORE,JSON.stringify(L))}catch(e){}}
 function saveCfg(){try{localStorage.setItem(CFG,JSON.stringify(C))}catch(e){}}
 
-/* ---------- Dates and totals ---------- */
+/* ---------- Sanalar va hisob-kitob ---------- */
 function ud(s){const p=s.split('-');return Date.UTC(+p[0],p[1]-1,+p[2])}
 function iso(ms){return new Date(ms).toISOString().slice(0,10)}
 function dayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function fmtDate(ms){return new Date(ms).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}
+function fmtDate(ms){const d=new Date(ms);return d.getUTCFullYear()+'-yil '+d.getUTCDate()+'-'+OY[d.getUTCMonth()]+', '+HAFTA[d.getUTCDay()]}
+function monthYear(d){return d.getFullYear()+'-yil '+OY[d.getMonth()]}
+function timeNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function startFrom(birth,g,basis){return iso(ud(birth)+Math.round(MIN_AGE[basis][g]*LUNAR)*864e5)}
 function stats(m){
   const D=Math.max(0,Math.round((ud(m.end)-ud(m.start))/864e5)+1);
@@ -207,7 +211,7 @@ function norm(m){
 }
 if(L.m)L.m=norm(L.m);
 
-/* ---------- Marking ---------- */
+/* ---------- Belgilash ---------- */
 function markDirty(){L.dirty=true;rev++;persist();schedule()}
 function logIt(m,n){const k=dayKey(new Date());m.log[k]=Math.max(0,(m.log[k]||0)+n)}
 function touchProg(m){if(m.hist.length>300)m.hist.shift();m.progAt=Date.now();markDirty();render()}
@@ -233,14 +237,13 @@ $('bu').onclick=undo;$('fu').onclick=undo;
 $('fday').onclick=()=>{const m=L.m;if(m)addFlex(NAMES.slice(0,stats(m).P).map((_,i)=>i))};
 $('rows').onclick=e=>{const b=e.target.closest('button');if(b)addFlex([+b.dataset.i])};
 
-/* ---------- GitHub sync ---------- */
+/* ---------- GitHub bilan sinxronlash ---------- */
 const cfgOk=()=>!!(C.owner&&C.repo&&C.token);
 function url(p){return 'https://api.github.com/repos/'+encodeURIComponent(C.owner)+'/'+encodeURIComponent(C.repo)+'/contents/'+p}
 function hdrs(x){return Object.assign({'Authorization':'Bearer '+C.token,'Accept':'application/vnd.github+json'},x||{})}
 function b64e(s){const b=new TextEncoder().encode(s);let r='';for(let i=0;i<b.length;i+=32768)r+=String.fromCharCode.apply(null,b.subarray(i,i+32768));return btoa(r)}
 function b64d(s){const bin=atob(s.replace(/\s/g,''));const b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);return new TextDecoder().decode(b)}
 function setStatus(t,kind){const el=$('sync');el.textContent=t;el.style.color=kind==='err'?'var(--err)':kind==='warn'?'var(--warn)':'var(--muted)'}
-function timeNow(){return new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
 
 async function ghGet(){
   const r=await fetch(url(PATH)+'?ref='+encodeURIComponent(C.branch),{headers:hdrs(),cache:'no-store'});
@@ -271,7 +274,7 @@ async function push(){
   for(let i=0;i<2;i++){
     const sent=rev;
     if(sha===undefined){const j=await ghGet();sha=j?j.sha:null;if(j&&!adoptRemote(j))return}
-    const body={message:'Qada progress update',content:b64e(JSON.stringify(L.m)),branch:C.branch};
+    const body={message:'Qazo hisobi yangilandi',content:b64e(JSON.stringify(L.m)),branch:C.branch};
     if(sha)body.sha=sha;
     const r=await fetch(url(PATH),{method:'PUT',headers:hdrs({'Content-Type':'application/json'}),body:JSON.stringify(body)});
     if(r.ok){sha=(await r.json()).content.sha;if(rev===sent)L.dirty=false;else again=again||'push';persist();return}
@@ -281,45 +284,45 @@ async function push(){
 }
 function failed(e){
   const m=e&&e.message;
-  if(m==='401')setStatus('Key rejected. Check Settings','err');
-  else if(m==='403')setStatus('Key has no access to the repo','err');
-  else if(m==='404')setStatus('Repo or branch not found','err');
+  if(m==='401')setStatus('Kalit rad etildi. Sozlamalarni tekshiring','err');
+  else if(m==='403')setStatus('Kalitning omborga ruxsati yoʻq','err');
+  else if(m==='404')setStatus('Ombor yoki tarmoq topilmadi','err');
   else{
-    setStatus(navigator.onLine?'Sync failed. Retrying soon':'Offline. Saved on this phone','warn');
+    setStatus(navigator.onLine?'Sinxronlab boʻlmadi. Birozdan soʻng qayta urinadi':'Internet yoʻq. Telefonda saqlandi','warn');
     clearTimeout(retry);retry=setTimeout(()=>runSync('pull'),30000);
   }
 }
 async function runSync(kind){
   if(!cfgOk())return;
   if(busy){if(kind==='pull'||!again)again=kind;return}
-  busy=true;setStatus('Syncing…');
+  busy=true;setStatus('Sinxronlanmoqda…');
   try{
     if(kind==='pull')await pull();
     await push();
-    setStatus(L.m?'Saved to GitHub '+timeNow():'Connected to GitHub');
+    setStatus(L.m?'GitHubga saqlandi '+timeNow():'GitHubga ulandi');
   }catch(e){failed(e)}
   busy=false;
   if(again){const k=again;again=null;runSync(k)}
 }
 function schedule(){
-  if(!cfgOk()){setStatus('Saved on this phone · not connected');return}
-  setStatus('Saving…');clearTimeout(timer);timer=setTimeout(()=>runSync('push'),1500);
+  if(!cfgOk()){setStatus('Telefonda saqlandi · ulanmagan');return}
+  setStatus('Saqlanmoqda…');clearTimeout(timer);timer=setTimeout(()=>runSync('push'),1500);
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')runSync('pull');else if(L.dirty)runSync('push')});
 window.addEventListener('online',()=>runSync('pull'));
 
-/* ---------- Switching repositories safely ---------- */
+/* ---------- Omborlar orasida xavfsiz oʻtish ---------- */
 function switchTo(c){
   const same=c.owner===C.owner&&c.repo===C.repo;
   if(!same&&C.repo&&L.m){
-    const warn=L.dirty?' Changes not yet saved to GitHub will be lost.':'';
-    if(!confirm('This phone is set up for "'+C.repo+'". Switch to "'+c.repo+'"? The current record will be removed from this phone (it stays in GitHub).'+warn))return false;
+    const warn=L.dirty?' GitHubga hali saqlanmagan oʻzgarishlar yoʻqoladi.':'';
+    if(!confirm('Bu telefon «'+C.repo+'» omboriga ulangan. «'+c.repo+'» omboriga oʻtasizmi? Joriy hisob faqat shu telefondan oʻchiriladi (GitHubda saqlanib qoladi).'+warn))return false;
     L={m:null,dirty:false};persist();fillDetails();
   }
   C=c;saveCfg();sha=undefined;return true;
 }
 
-/* ---------- Rendering ---------- */
+/* ---------- Koʻrinish ---------- */
 function render(){
   ['me','set'].forEach(t=>{$('t-'+t).classList.toggle('on',tab===t);$('v-'+t).classList.toggle('hide',tab!==t)});
   const has=!!L.m;
@@ -328,36 +331,36 @@ function render(){
   $('details').classList.toggle('hide',(tab==='me'&&has)||(tab==='set'&&!has));
   $('welcome').classList.toggle('hide',has);
   $('mine').classList.toggle('hide',!has);
-  $('d-save').textContent=has?'Save changes':'Start tracking';
+  $('d-save').textContent=has?'Oʻzgarishlarni saqlash':'Hisobni boshlash';
   if(has&&tab==='me')renderMe();
 }
 function renderMe(){
   const m=L.m,s=stats(m),p=s.T?s.done/s.T*100:0;
-  $('mename').textContent=m.name?'Assalamu alaikum, '+m.name:'';
+  $('mename').textContent=m.name?'Assalomu alaykum, '+m.name:'';
   $('mr').textContent=num(s.R);$('md').textContent=num(s.done)+' / '+num(s.T);
   $('bar').style.width=p+'%';
-  $('mp').textContent=p.toFixed(1)+'% complete'+(s.E?' · '+num(s.E)+' days excluded':'');
+  $('mp').textContent=p.toFixed(1).replace('.',',')+'% bajarildi'+(s.E?' · '+num(s.E)+' kun hisobdan chiqarilgan':'');
   const ord=m.mode!=='flexible';
   $('ordered').classList.toggle('hide',!ord);$('flex').classList.toggle('hide',ord);
   if(ord){
     const di=Math.floor(s.done/s.P),pi=s.done%s.P,names=NAMES.slice(0,s.P);
-    if(s.R===0){$('nx').textContent='All made up';$('nd').textContent='May Allah accept it.'}
-    else{$('nx').textContent=names[pi];$('nd').textContent=RAK[pi]+" rak'ahs · day "+num(di+1)+' of '+num(s.Deff)+(s.E?'':' · '+fmtDate(ud(m.start)+di*864e5))}
+    if(s.R===0){$('nx').textContent='Hammasi ado etildi';$('nd').textContent='Alloh qabul qilsin.'}
+    else{$('nx').textContent=names[pi];$('nd').textContent=RAK[pi]+' rakat · '+num(s.Deff)+' kundan '+num(di+1)+'-kun'+(s.E?'':' · '+fmtDate(ud(m.start)+di*864e5))}
     $('dots').style.gridTemplateColumns='repeat('+s.P+',1fr)';
     $('dots').innerHTML=names.map((n,i)=>'<div class="dot'+(s.R===0||i<pi?' done':i===pi?' now':'')+'">'+n+'</div>').join('');
-    $('bday').textContent=pi===0?'Full day ('+s.P+')':'Finish this day ('+(s.P-pi)+')';
+    $('bday').textContent=pi===0?'Butun kun ('+s.P+')':'Kunni yakunlash ('+(s.P-pi)+')';
   }else{
-    $('rows').innerHTML=NAMES.slice(0,s.P).map((n,i)=>{const c=Math.min(m.counts[i],s.Deff);return '<div class="prow"><span style="font-weight:600">'+n+'</span><div class="pbar"><div style="width:'+(s.Deff?c/s.Deff*100:0)+'%"></div></div><span class="l" style="text-align:right">'+num(c)+' / '+num(s.Deff)+'</span><button data-i="'+i+'" aria-label="Add one '+n+'">+1</button></div>'}).join('');
-    $('fday').textContent='Full day (all '+s.P+')';
+    $('rows').innerHTML=NAMES.slice(0,s.P).map((n,i)=>{const c=Math.min(m.counts[i],s.Deff);return '<div class="prow"><span style="font-weight:600">'+n+'</span><div class="pbar"><div style="width:'+(s.Deff?c/s.Deff*100:0)+'%"></div></div><span class="l" style="text-align:right">'+num(c)+' / '+num(s.Deff)+'</span><button data-i="'+i+'" aria-label="Bitta '+n+' qoʻshish">+1</button></div>'}).join('');
+    $('fday').textContent='Butun kun ('+s.P+' tasi)';
   }
   $('td').textContent=num(m.log[dayKey(new Date())]||0);
   $('sk').textContent=num(streak(m));
   const g=Math.ceil(s.R/(m.goal||1)),e=new Date();e.setDate(e.getDate()+g);
-  $('fd').textContent=s.R===0?'Done':e.toLocaleDateString(undefined,{month:'long',year:'numeric'})+' · '+num(g)+' days at '+m.goal+'/day';
+  $('fd').textContent=s.R===0?'Tugadi':monthYear(e)+' · '+num(g)+' kun, kuniga '+m.goal+' tadan';
 }
 ['me','set'].forEach(t=>$('t-'+t).onclick=()=>{tab=t;if(t==='set'){fillCfg();fillDetails()}render()});
 
-/* ---------- Details form ---------- */
+/* ---------- Maʼlumotlar shakli ---------- */
 function fillDetails(){
   const m=L.m||{name:'',gender:'m',birth:'',basis:'hanafi',start:'',end:'',mode:'ordered',witr:true,period:0,nifas:0,goal:12};
   $('d-name').value=m.name||'';$('d-gender').value=m.gender;$('d-birth').value=m.birth;$('d-basis').value=m.basis;
@@ -379,7 +382,7 @@ function updateDetails(){
   if(auto&&v.birth){$('d-start').value=startFrom(v.birth,v.gender,v.basis);v.start=$('d-start').value}
   if(v.start&&v.end&&ud(v.end)>=ud(v.start)){
     const s=stats(Object.assign({counts:[0,0,0,0,0,0],done:0},v));
-    $('d-total').textContent='Starts '+fmtDate(ud(v.start))+'. You owe '+num(s.T)+' prayers over '+num(s.Deff)+' days'+(s.E?' ('+num(s.E)+' days excluded)':'')+'.';
+    $('d-total').textContent='Boshlanishi: '+fmtDate(ud(v.start))+'. Qarzingiz: '+num(s.T)+' namoz, '+num(s.Deff)+' kun'+(s.E?' ('+num(s.E)+' kun hisobdan chiqarilgan)':'')+'.';
   }else $('d-total').textContent='';
 }
 ['d-name','d-gender','d-birth','d-basis','d-start','d-end','d-mode','d-witr','d-period','d-nifas','d-goal'].forEach(id=>{
@@ -388,12 +391,12 @@ function updateDetails(){
 });
 $('d-save').onclick=()=>{
   const v=readDetails(),err=t=>{$('d-msg').textContent=t;$('d-msg').style.color='var(--err)'};
-  if(v.basis!=='custom'&&!v.birth)return err('Enter your date of birth, or choose "I\'ll pick the start date".');
-  if(!v.start)return err('Enter a start date.');
-  if(!v.end)return err('Enter the end date.');
-  if(ud(v.end)<ud(v.start))return err('The end date must be on or after the start date.');
-  if(!(v.goal>=1))return err('Enter at least 1 qada prayer per day.');
-  if(v.gender==='f'&&v.period>15)return err('Period days per month can be at most 15.');
+  if(v.basis!=='custom'&&!v.birth)return err('Tugʻilgan sanangizni kiriting yoki «Sanani oʻzim tanlayman»ni tanlang.');
+  if(!v.start)return err('Boshlanish sanasini kiriting.');
+  if(!v.end)return err('Tugash sanasini kiriting.');
+  if(ud(v.end)<ud(v.start))return err('Tugash sanasi boshlanish sanasidan oldin boʻlmasligi kerak.');
+  if(!(v.goal>=1))return err('Kuniga kamida 1 ta qazo namozini kiriting.');
+  if(v.gender==='f'&&v.period>15)return err('Oylik hayz kunlari koʻpi bilan 15 kun boʻlishi mumkin.');
   if(v.gender!=='f'){v.period=0;v.nifas=0}
   const now=Date.now(),first=!L.m;let m;
   if(L.m){
@@ -402,21 +405,21 @@ $('d-save').onclick=()=>{
     if(old.mode!==v.mode||old.witr!==v.witr){applyCounts(m,c);m.hist=[];m.progAt=now}
   }else m=norm(v);
   m.setAt=now;L.m=m;markDirty();
-  if(first)tab='me';else{$('d-msg').textContent='Saved.';$('d-msg').style.color='var(--muted)'}
+  if(first)tab='me';else{$('d-msg').textContent='Saqlandi.';$('d-msg').style.color='var(--muted)'}
   render();
 };
 
-/* ---------- Settings actions ---------- */
+/* ---------- Sozlamalar amallari ---------- */
 function fillCfg(){$('gu').value=C.owner;$('gr').value=C.repo;$('gb').value=C.branch;$('gt').value=C.token;if(!$('iu').value)$('iu').value=C.owner}
 function showMsg(id,t,isErr){$(id).textContent=t;$(id).style.color=isErr?'var(--err)':'var(--muted)'}
 ['gu','gr','gb','gt'].forEach(id=>$(id).addEventListener('input',()=>showMsg('smsg','')));
 $('gsave').onclick=()=>{
   const c={owner:$('gu').value.trim(),repo:$('gr').value.trim(),branch:$('gb').value.trim()||'main',token:$('gt').value.trim()};
-  if(!(c.owner&&c.repo&&c.token))return showMsg('smsg','Fill in username, repository and key.',true);
+  if(!(c.owner&&c.repo&&c.token))return showMsg('smsg','Foydalanuvchi nomi, ombor va kalitni kiriting.',true);
   if(!switchTo(c))return fillCfg();
-  fillCfg();showMsg('smsg','Saved. Connecting…');render();runSync('pull');
+  fillCfg();showMsg('smsg','Saqlandi. Ulanmoqda…');render();runSync('pull');
 };
-$('gdis').onclick=()=>{C.token='';saveCfg();sha=undefined;fillCfg();setStatus('Saved on this phone · not connected');showMsg('smsg','Disconnected. Your record stays on this phone.')};
+$('gdis').onclick=()=>{C.token='';saveCfg();sha=undefined;fillCfg();setStatus('Telefonda saqlandi · ulanmagan');showMsg('smsg','Uzildi. Hisobingiz telefonda qoladi.')};
 
 function makeCode(c){return b64e(JSON.stringify({o:c.owner,r:c.repo,b:c.branch||'main',t:c.token}))}
 function decodeInvite(text){
@@ -425,27 +428,27 @@ function decodeInvite(text){
   return{owner:o.o,repo:o.r,branch:o.b||'main',token:o.t};
 }
 $('invjoin').onclick=()=>{
-  let c;try{c=decodeInvite($('invin').value)}catch(e){return showMsg('jmsg',"That invite didn't work. Check it was copied in full.",true)}
+  let c;try{c=decodeInvite($('invin').value)}catch(e){return showMsg('jmsg','Taklif ishlamadi. Havola toʻliq nusxalanganini tekshiring.',true)}
   if(!switchTo(c))return;
-  $('invin').value='';fillCfg();showMsg('jmsg','Joined. Syncing…');render();runSync('pull');
+  $('invin').value='';fillCfg();showMsg('jmsg','Qoʻshildingiz. Sinxronlanmoqda…');render();runSync('pull');
 };
 $('imake').onclick=()=>{
   const c={owner:$('iu').value.trim(),repo:$('ir').value.trim(),branch:'main',token:$('it').value.trim()};
-  if(!(c.owner&&c.repo&&c.token))return showMsg('imsg','Fill in the username, their repository and their key.',true);
+  if(!(c.owner&&c.repo&&c.token))return showMsg('imsg','Foydalanuvchi nomi, uning ombori va kalitini kiriting.',true);
   const link=location.origin+location.pathname+'#join='+encodeURIComponent(makeCode(c));
   $('iout').value=link;$('iout').classList.remove('hide');$('it').value='';
-  if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>showMsg('imsg','Invite link for '+c.repo+' copied.'),()=>showMsg('imsg','Copy the link from the box above.'));
-  else showMsg('imsg','Copy the link from the box above.');
+  if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>showMsg('imsg','«'+c.repo+'» uchun taklif havolasi nusxalandi.'),()=>showMsg('imsg','Havolani yuqoridagi maydondan nusxalang.'));
+  else showMsg('imsg','Havolani yuqoridagi maydondan nusxalang.');
 };
 $('bexp').onclick=()=>{
   if(!L.m)return;
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(L.m,null,1)],{type:'application/json'}));
-  a.download='qada-backup-'+dayKey(new Date())+'.json';
+  a.download='qazo-zaxira-'+dayKey(new Date())+'.json';
   document.body.appendChild(a);a.click();a.remove();
 };
 
-/* ---------- Invite link on open ---------- */
+/* ---------- Ochilganda taklif havolasi ---------- */
 (function(){
   if(!/join=/.test(location.hash))return;
   try{
@@ -454,17 +457,17 @@ $('bexp').onclick=()=>{
   }catch(e){}
 })();
 
-/* ---------- Home screen icon ---------- */
+/* ---------- Bosh ekran belgisi ---------- */
 (function(){try{
   const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');
   x.fillStyle='#1d6b52';x.fillRect(0,0,180,180);
-  x.fillStyle='#fff';x.font='bold 60px -apple-system,sans-serif';x.textAlign='center';x.textBaseline='middle';
-  x.fillText('قضاء',90,96);
+  x.fillStyle='#fff';x.font='bold 50px -apple-system,sans-serif';x.textAlign='center';x.textBaseline='middle';
+  x.fillText('Qazo',90,92);
   const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL('image/png');document.head.appendChild(l);
 }catch(e){}})();
 
 fillDetails();fillCfg();render();
-if(cfgOk())runSync('pull');else setStatus('Saved on this phone · not connected');
+if(cfgOk())runSync('pull');else setStatus('Telefonda saqlandi · ulanmagan');
 </script>
 </body>
 </html>
