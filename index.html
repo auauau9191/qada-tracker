@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Qada">
+<title>Qada tracker</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--soft:#efede6;--text:#1f1f1d;--muted:#6b6a64;--line:rgba(0,0,0,.1);--accent:#1d6b52;--on-accent:#fff;--ok-bg:#e3f2ea;--ok:#1d6b52;--err:#b3261e;--warn:#8a5a00}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--soft:#30302d;--text:#f1f0ec;--muted:#a3a29b;--line:rgba(255,255,255,.12);--accent:#3fa37f;--on-accent:#0d1f18;--ok-bg:#1f3a2f;--ok:#7fd3b0;--err:#f2958f;--warn:#e7b65a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 32px)}
+h1{font-size:20px;font-weight:600;margin:0}
+h2{font-size:15px;font-weight:600;margin:18px 0 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.sync{font-size:12px;color:var(--muted);text-align:right}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.m{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.l{font-size:13px;color:var(--muted);margin:0}
+.v{font-size:22px;font-weight:600;margin:2px 0 0}
+.bar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;margin:0 0 6px}
+.bar div{height:100%;width:0;background:var(--accent);transition:width .3s}
+.next{font-size:32px;font-weight:700;margin:2px 0 0}
+.sub{font-size:14px;color:var(--muted);margin:2px 0 12px}
+.dots{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:14px}
+.dot{font-size:11px;text-align:center;padding:7px 0;border-radius:8px;border:1px solid var(--line);color:var(--muted)}
+.dot.done{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.dot.now{border:2px solid var(--accent);color:var(--text);font-weight:600}
+button{font:inherit;border-radius:12px;border:1px solid var(--line);background:var(--soft);color:var(--text);padding:12px 14px;cursor:pointer}
+button:active{transform:scale(.98)}
+.primary{width:100%;background:var(--accent);color:var(--on-accent);border-color:transparent;font-size:18px;font-weight:600;padding:16px}
+.row{display:flex;gap:8px;margin-top:8px}
+.row button{flex:1}
+details summary{cursor:pointer;font-weight:600;list-style:none}
+details summary::-webkit-details-marker{display:none}
+label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+input{width:100%;font:inherit;font-size:16px;margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+.msg{font-size:13px;min-height:1em;margin:8px 0 0}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><h1>Qada tracker</h1><div class="sync" id="sync">Not connected</div></div>
+
+  <div class="grid">
+    <div class="m"><p class="l">Remaining</p><p class="v" id="mr">0</p></div>
+    <div class="m"><p class="l">Made up</p><p class="v" id="md">0</p></div>
+  </div>
+  <div class="bar"><div id="bar"></div></div>
+  <p class="note" id="mp" style="margin:0 0 12px"></p>
+
+  <div class="card">
+    <p class="l">Next to make up</p>
+    <p class="next" id="nx">Fajr</p>
+    <p class="sub" id="nd"></p>
+    <div class="dots" id="dots"></div>
+    <button class="primary" id="b1">Mark prayed</button>
+    <div class="row"><button id="bday">Full day (6)</button><button id="bu">Undo</button></div>
+  </div>
+
+  <div class="grid">
+    <div class="m"><p class="l">Today</p><p class="v" id="td">0</p></div>
+    <div class="m"><p class="l">Streak (days)</p><p class="v" id="sk">0</p></div>
+  </div>
+  <div class="card"><p class="l">Finish at your pace</p><p class="v" id="fd" style="font-size:18px">-</p></div>
+
+  <div class="card"><details>
+    <summary>Settings and GitHub sync</summary>
+    <h2>Tracking</h2>
+    <label>Start (bulugh)<input type="date" id="qs"></label>
+    <label>End<input type="date" id="qe"></label>
+    <label>Qada prayers per day (for the estimate)<input type="number" id="qg" min="1" max="200" step="1" inputmode="numeric"></label>
+    <h2>GitHub sync</h2>
+    <label>GitHub username<input id="gu" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="yourname"></label>
+    <label>Data repository (private)<input id="gr" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-data"></label>
+    <label>Branch<input id="gb" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="main"></label>
+    <label>File path<input id="gp" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-progress.json"></label>
+    <label>Fine-grained access token<input id="gt" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
+    <p class="msg" id="smsg"></p>
+    <div class="row"><button id="bsave">Save settings</button><button id="bdis">Disconnect</button></div>
+    <h2>Backup</h2>
+    <div class="row"><button id="bexp">Download backup</button><button id="bimp">Restore backup</button></div>
+    <input type="file" id="fimp" accept="application/json,.json" style="display:none">
+    <div class="row"><button id="breset" style="color:var(--err)">Reset all progress</button></div>
+    <p class="note">Your token is stored only on this device. Never put it in this file or in any repository.</p>
+  </details></div>
+</main>
+
+<script>
+const NAMES=['Fajr','Dhuhr','Asr','Maghrib','Isha','Witr'];
+const RAKAHS=[2,4,4,3,4,3];
+const PER_DAY=6;
+const DATA_KEY='qada_data_v1',CFG_KEY='qada_cfg_v1',DIRTY_KEY='qada_dirty_v1';
+const fresh=()=>({v:1,start:'2012-06-07',end:'2022-12-31',goal:12,done:0,log:{},hist:[],updatedAt:0});
+const $=id=>document.getElementById(id);
+const num=n=>Math.round(n).toLocaleString();
+
+function readJSON(k,d){try{const r=localStorage.getItem(k);return Object.assign(d,r?JSON.parse(r):{})}catch(e){return d}}
+let S=readJSON(DATA_KEY,fresh());
+let C=readJSON(CFG_KEY,{owner:'',repo:'',branch:'main',path:'qada-progress.json',token:''});
+let dirty=false;try{dirty=localStorage.getItem(DIRTY_KEY)==='1'}catch(e){}
+let sha=null,busy=false,again=false,timer=null,retry=null,rev=0;
+
+function save(){try{localStorage.setItem(DATA_KEY,JSON.stringify(S));localStorage.setItem(DIRTY_KEY,dirty?'1':'0')}catch(e){}}
+function ud(s){const p=s.split('-');return Date.UTC(+p[0],p[1]-1,+p[2])}
+function days(){return Math.round((ud(S.end)-ud(S.start))/864e5)+1}
+function dayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDate(ms){return new Date(ms).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}
+
+function streak(){let c=0;const d=new Date();if(!S.log[dayKey(d)])d.setDate(d.getDate()-1);while(S.log[dayKey(d)]>0){c++;d.setDate(d.getDate()-1)}return c}
+
+function draw(){
+  const D=days(),T=D*PER_DAY;if(S.done>T)S.done=T;
+  const R=T-S.done,p=T?S.done/T*100:0;
+  $('mr').textContent=num(R);
+  $('md').textContent=num(S.done)+' / '+num(T);
+  $('bar').style.width=p+'%';
+  $('mp').textContent=p.toFixed(1)+'% complete';
+  const di=Math.floor(S.done/PER_DAY),pi=S.done%PER_DAY;
+  if(R===0){$('nx').textContent='All made up';$('nd').textContent='May Allah accept it from you.'}
+  else{$('nx').textContent=NAMES[pi];$('nd').textContent=RAKAHS[pi]+" rak'ahs · day "+num(di+1)+' of '+num(D)+' · '+fmtDate(ud(S.start)+di*864e5)}
+  $('dots').innerHTML=NAMES.map((n,i)=>'<div class="dot'+(R===0||i<pi?' done':i===pi?' now':'')+'">'+n+'</div>').join('');
+  $('bday').textContent=pi===0?'Full day (6)':'Finish this day ('+(PER_DAY-pi)+')';
+  $('td').textContent=num(S.log[dayKey(new Date())]||0);
+  $('sk').textContent=num(streak());
+  const g=Math.ceil(R/S.goal),e=new Date();e.setDate(e.getDate()+g);
+  $('fd').textContent=R===0?'Done':e.toLocaleDateString(undefined,{month:'long',year:'numeric'})+' · '+num(g)+' days at '+S.goal+'/day';
+}
+
+function fill(){$('qs').value=S.start;$('qe').value=S.end;$('qg').value=S.goal;$('gu').value=C.owner;$('gr').value=C.repo;$('gb').value=C.branch;$('gp').value=C.path;$('gt').value=C.token}
+function msg(t,isErr){const el=$('smsg');el.textContent=t;el.style.color=isErr?'var(--err)':'var(--muted)'}
+
+function change(n,record){
+  const T=days()*PER_DAY;
+  n=Math.max(-S.done,Math.min(n,T-S.done));
+  if(!n)return;
+  S.done+=n;
+  const k=dayKey(new Date());S.log[k]=Math.max(0,(S.log[k]||0)+n);
+  if(record){S.hist.push(n);if(S.hist.length>300)S.hist.shift()}
+  touch();
+}
+function touch(){S.updatedAt=Date.now();dirty=true;rev++;save();draw();schedule()}
+
+$('b1').onclick=()=>change(1,true);
+$('bday').onclick=()=>change(PER_DAY-(S.done%PER_DAY),true);
+$('bu').onclick=()=>{const n=S.hist.pop();change(-(n||1),false)};
+
+/* ---------- GitHub sync ---------- */
+const cfgOk=()=>!!(C.owner&&C.repo&&C.token);
+function apiUrl(){return 'https://api.github.com/repos/'+encodeURIComponent(C.owner)+'/'+encodeURIComponent(C.repo)+'/contents/'+C.path.split('/').map(encodeURIComponent).join('/')}
+function ghHeaders(){return{'Authorization':'Bearer '+C.token,'Accept':'application/vnd.github+json'}}
+function b64e(s){const b=new TextEncoder().encode(s);let r='';for(let i=0;i<b.length;i+=32768)r+=String.fromCharCode.apply(null,b.subarray(i,i+32768));return btoa(r)}
+function b64d(s){const bin=atob(s.replace(/\s/g,''));const b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);return new TextDecoder().decode(b)}
+function setStatus(t,kind){const el=$('sync');el.textContent=t;el.style.color=kind==='err'?'var(--err)':kind==='warn'?'var(--warn)':'var(--muted)'}
+
+async function getRemote(){
+  const r=await fetch(apiUrl()+'?ref='+encodeURIComponent(C.branch),{headers:ghHeaders(),cache:'no-store'});
+  if(r.status===404)return{data:null,sha:null};
+  if(!r.ok)throw new Error(String(r.status));
+  const j=await r.json();
+  return{data:JSON.parse(b64d(j.content)),sha:j.sha};
+}
+function adoptIfNewer(d){
+  if(d&&(d.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),d);dirty=false;save();fill();draw();return true}
+  return false;
+}
+function synced(){
+  busy=false;
+  setStatus('Saved to GitHub '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));
+  if(again){again=false;if(dirty)push()}
+}
+function failed(e){
+  busy=false;const m=e&&e.message;
+  if(m==='401')setStatus('Token rejected. Check settings','err');
+  else if(m==='403')setStatus('Token has no access to the repo','err');
+  else if(m==='404')setStatus('Repo or branch not found','err');
+  else{
+    setStatus(navigator.onLine?'Sync failed. Retrying soon':'Offline. Saved on this phone','warn');
+    clearTimeout(retry);retry=setTimeout(()=>{dirty?push():pull(false)},30000);
+  }
+}
+function schedule(){if(!cfgOk())return;setStatus('Saving…');clearTimeout(timer);timer=setTimeout(push,1500)}
+
+async function push(){
+  if(!cfgOk()||!dirty)return;
+  if(busy){again=true;return}
+  busy=true;setStatus('Saving…');
+  try{
+    if(sha===null){const g=await getRemote();sha=g.sha;if(adoptIfNewer(g.data))return synced()}
+    for(let i=0;i<2;i++){
+      const sentRev=rev;
+      const body={message:'Qada progress: '+S.done+' made up',content:b64e(JSON.stringify(S)),branch:C.branch};
+      if(sha)body.sha=sha;
+      const r=await fetch(apiUrl(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders()),body:JSON.stringify(body)});
+      if(r.ok){
+        sha=(await r.json()).content.sha;
+        if(rev===sentRev){dirty=false;save()}else again=true;
+        return synced();
+      }
+      if((r.status===409||r.status===422)&&i===0){const g=await getRemote();sha=g.sha;if(adoptIfNewer(g.data))return synced();continue}
+      throw new Error(String(r.status));
+    }
+  }catch(e){failed(e)}
+}
+
+async function pull(connecting){
+  if(!cfgOk()||busy)return;
+  if(dirty&&!connecting)return push();
+  busy=true;setStatus('Syncing…');
+  try{
+    const g=await getRemote();sha=g.sha;
+    if(connecting&&g.data&&g.data.done!==S.done){
+      const useRemote=confirm("GitHub has "+num(g.data.done)+" made up and this phone has "+num(S.done)+".\n\nOK = use the GitHub copy\nCancel = keep this phone's copy and upload it");
+      if(useRemote){S=Object.assign(fresh(),g.data);dirty=false;save();fill();draw();return synced()}
+      S.updatedAt=Date.now();dirty=true;rev++;save();busy=false;return push();
+    }
+    if(adoptIfNewer(g.data))return synced();
+    if(!g.data||(S.updatedAt||0)>(g.data.updatedAt||0)){dirty=true;save();busy=false;return push()}
+    synced();
+  }catch(e){failed(e)}
+}
+
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull(false);else if(dirty)push()});
+window.addEventListener('online',()=>{dirty?push():pull(false)});
+
+/* ---------- Settings ---------- */
+['qs','qe','qg','gu','gr','gb','gp','gt'].forEach(id=>$(id).addEventListener('input',()=>msg('')));
+$('bsave').onclick=()=>{
+  const s=$('qs').value,e=$('qe').value,g=parseInt($('qg').value,10);
+  if(!s||!e||ud(e)<ud(s))return msg('Pick an end date on or after the start date.',true);
+  if(!(g>=1))return msg('Enter at least 1 prayer per day.',true);
+  const o=$('gu').value.trim(),r=$('gr').value.trim(),t=$('gt').value.trim();
+  if((o||r||t)&&!(o&&r&&t))return msg('Fill in username, repository and token to connect, or leave all three empty.',true);
+  if(s!==S.start||e!==S.end||g!==S.goal){S.start=s;S.end=e;S.goal=g;touch()}
+  const wasConnected=cfgOk();
+  C={owner:o,repo:r,branch:$('gb').value.trim()||'main',path:$('gp').value.trim()||'qada-progress.json',token:t};
+  try{localStorage.setItem(CFG_KEY,JSON.stringify(C))}catch(x){}
+  fill();sha=null;
+  if(cfgOk()){msg('Settings saved.');setStatus('Connecting…');pull(!wasConnected)}
+  else{msg('Settings saved. GitHub sync is off.');setStatus('Not connected')}
+};
+$('bdis').onclick=()=>{C.token='';try{localStorage.setItem(CFG_KEY,JSON.stringify(C))}catch(x){}fill();sha=null;setStatus('Not connected');msg('Disconnected. Progress stays on this phone.')};
+
+$('bexp').onclick=()=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));
+  a.download='qada-backup-'+dayKey(new Date())+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+};
+$('bimp').onclick=()=>$('fimp').click();
+$('fimp').onchange=async ev=>{
+  const f=ev.target.files[0];if(!f)return;
+  try{const d=JSON.parse(await f.text());if(typeof d.done!=='number')throw 0;S=Object.assign(fresh(),d);fill();touch();msg('Backup restored.')}
+  catch(x){msg("That file isn't a valid backup.",true)}
+  ev.target.value='';
+};
+$('breset').onclick=()=>{
+  if(!confirm("Erase all progress? This can't be undone."))return;
+  const keep={start:S.start,end:S.end,goal:S.goal};
+  S=Object.assign(fresh(),keep);touch();msg('Progress reset.');
+};
+
+/* ---------- Home screen icon ---------- */
+(function(){try{
+  const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');
+  x.fillStyle='#1d6b52';x.fillRect(0,0,180,180);
+  x.fillStyle='#fff';x.font='bold 60px -apple-system,sans-serif';x.textAlign='center';x.textBaseline='middle';
+  x.fillText('قضاء',90,96);
+  const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL('image/png');document.head.appendChild(l);
+}catch(e){}})();
+
+fill();draw();
+if(cfgOk())pull(false);
+</script>
+</body>
+</html>
