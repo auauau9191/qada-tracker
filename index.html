@@ -15,9 +15,13 @@
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 main{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 32px)}
 h1{font-size:20px;font-weight:600;margin:0}
-h2{font-size:15px;font-weight:600;margin:18px 0 0}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+h2{font-size:15px;font-weight:600;margin:0 0 4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
 .sync{font-size:12px;color:var(--muted);text-align:right}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--soft);padding:4px;border-radius:12px;margin-bottom:14px}
+.tabs button{border:0;background:transparent;padding:9px 0;font-size:15px;color:var(--muted)}
+.tabs button.on{background:var(--card);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.hide{display:none!important}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .m{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
@@ -36,235 +40,419 @@ button:active{transform:scale(.98)}
 .primary{width:100%;background:var(--accent);color:var(--on-accent);border-color:transparent;font-size:18px;font-weight:600;padding:16px}
 .row{display:flex;gap:8px;margin-top:8px}
 .row button{flex:1}
-details summary{cursor:pointer;font-weight:600;list-style:none}
-details summary::-webkit-details-marker{display:none}
+.prow{display:grid;grid-template-columns:72px minmax(0,1fr) 92px auto;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.pbar{height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.pbar div{height:100%;background:var(--accent)}
 label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
-input{width:100%;font:inherit;font-size:16px;margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+input,select,textarea{width:100%;font:inherit;font-size:16px;margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+textarea{font-size:13px;font-family:ui-monospace,Menlo,monospace}
+.chk{display:flex;align-items:center;gap:8px;color:var(--text);font-size:15px;margin-top:14px}
+.chk input{width:auto;margin:0}
 .msg{font-size:13px;min-height:1em;margin:8px 0 0}
-.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.note{font-size:13px;color:var(--muted);margin:6px 0 0}
 </style>
 </head>
 <body>
 <main>
-  <div class="top"><h1>Qada tracker</h1><div class="sync" id="sync">Not connected</div></div>
+  <div class="top"><h1>Qada tracker</h1><div class="sync" id="sync"></div></div>
+  <div class="tabs"><button id="t-me" class="on">Tracker</button><button id="t-set">Settings</button></div>
 
-  <div class="grid">
-    <div class="m"><p class="l">Remaining</p><p class="v" id="mr">0</p></div>
-    <div class="m"><p class="l">Made up</p><p class="v" id="md">0</p></div>
+  <!-- Tracker -->
+  <section id="v-me">
+    <div id="welcome" class="card hide">
+      <h2>Welcome</h2>
+      <p class="note">Enter your details below to set up your tracker. Your record is saved to your own private repository.</p>
+    </div>
+    <div id="slot-me"></div>
+    <div id="mine" class="hide">
+      <p class="l" id="mename" style="margin-bottom:8px"></p>
+      <div class="grid">
+        <div class="m"><p class="l">Remaining</p><p class="v" id="mr">0</p></div>
+        <div class="m"><p class="l">Made up</p><p class="v" id="md">0</p></div>
+      </div>
+      <div class="bar"><div id="bar"></div></div>
+      <p class="note" id="mp" style="margin:0 0 12px"></p>
+      <div class="card" id="ordered">
+        <p class="l">Next to make up</p>
+        <p class="next" id="nx">Fajr</p>
+        <p class="sub" id="nd"></p>
+        <div class="dots" id="dots"></div>
+        <button class="primary" id="b1">Mark prayed</button>
+        <div class="row"><button id="bday">Full day</button><button id="bu">Undo</button></div>
+      </div>
+      <div class="card" id="flex">
+        <div id="rows"></div>
+        <div class="row"><button class="primary" id="fday">Full day</button></div>
+        <div class="row"><button id="fu">Undo last</button></div>
+      </div>
+      <div class="grid">
+        <div class="m"><p class="l">Today</p><p class="v" id="td">0</p></div>
+        <div class="m"><p class="l">Streak (days)</p><p class="v" id="sk">0</p></div>
+      </div>
+      <div class="card"><p class="l">Finish at your pace</p><p class="v" id="fd" style="font-size:18px">-</p></div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section id="v-set" class="hide">
+    <div id="slot-set"></div>
+    <div class="card">
+      <h2>GitHub sync</h2>
+      <label>GitHub username (owner)<input id="gu" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="yourname"></label>
+      <label>Repository<input id="gr" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-yourname"></label>
+      <label>Branch<input id="gb" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="main"></label>
+      <label>Access key (token)<input id="gt" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
+      <p class="msg" id="smsg"></p>
+      <div class="row"><button id="gsave">Save and connect</button><button id="gdis">Disconnect</button></div>
+    </div>
+    <div class="card">
+      <h2>Join with an invite</h2>
+      <label>Paste the invite link you were sent<textarea id="invin" rows="2"></textarea></label>
+      <div class="row"><button id="invjoin">Join</button></div>
+      <p class="msg" id="jmsg"></p>
+    </div>
+    <div class="card">
+      <h2>Make an invite for a family member</h2>
+      <p class="note">Use that person's own repository and key. Send the link only to them, privately.</p>
+      <label>GitHub username (owner)<input id="iu" autocapitalize="off" autocorrect="off" spellcheck="false"></label>
+      <label>Their repository<input id="ir" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-name"></label>
+      <label>Their access key<input id="it" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
+      <div class="row"><button id="imake">Create invite link</button></div>
+      <textarea id="iout" rows="3" readonly class="hide" style="margin-top:8px"></textarea>
+      <p class="msg" id="imsg"></p>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <div class="row"><button id="bexp">Download my record</button></div>
+    </div>
+  </section>
+
+  <!-- Details form (moved between tabs) -->
+  <div id="details" class="card">
+    <h2>Your details</h2>
+    <label>Your name (optional)<input id="d-name" maxlength="40"></label>
+    <label>Gender<select id="d-gender"><option value="m">Male</option><option value="f">Female</option></select></label>
+    <label>Date of birth<input type="date" id="d-birth"></label>
+    <label>Start date based on<select id="d-basis">
+      <option value="hanafi">Hanafi minimum age</option>
+      <option value="hanbali">Hanbali minimum age</option>
+      <option value="shafii">Shafi'i minimum age</option>
+      <option value="maliki">Maliki minimum age</option>
+      <option value="custom">I'll pick the start date</option>
+    </select></label>
+    <label>Start date<input type="date" id="d-start"></label>
+    <label>End date (the last day you missed prayers)<input type="date" id="d-end"></label>
+    <label>How to make up<select id="d-mode">
+      <option value="ordered">In order, day by day</option>
+      <option value="flexible">Any order, count each prayer</option>
+    </select></label>
+    <label class="chk"><input type="checkbox" id="d-witr"> Include witr</label>
+    <div id="d-women">
+      <label>Period days per month (excluded)<input type="number" id="d-period" min="0" max="15" step="1" inputmode="numeric"></label>
+      <label>Post-natal bleeding days in total (excluded)<input type="number" id="d-nifas" min="0" max="3000" step="1" inputmode="numeric"></label>
+    </div>
+    <label>Qada prayers per day (for the estimate)<input type="number" id="d-goal" min="1" max="200" step="1" inputmode="numeric"></label>
+    <p class="note" id="d-total"></p>
+    <p class="msg" id="d-msg"></p>
+    <div class="row"><button class="primary" id="d-save" style="font-size:16px;padding:12px">Start tracking</button></div>
   </div>
-  <div class="bar"><div id="bar"></div></div>
-  <p class="note" id="mp" style="margin:0 0 12px"></p>
-
-  <div class="card">
-    <p class="l">Next to make up</p>
-    <p class="next" id="nx">Fajr</p>
-    <p class="sub" id="nd"></p>
-    <div class="dots" id="dots"></div>
-    <button class="primary" id="b1">Mark prayed</button>
-    <div class="row"><button id="bday">Full day (6)</button><button id="bu">Undo</button></div>
-  </div>
-
-  <div class="grid">
-    <div class="m"><p class="l">Today</p><p class="v" id="td">0</p></div>
-    <div class="m"><p class="l">Streak (days)</p><p class="v" id="sk">0</p></div>
-  </div>
-  <div class="card"><p class="l">Finish at your pace</p><p class="v" id="fd" style="font-size:18px">-</p></div>
-
-  <div class="card"><details>
-    <summary>Settings and GitHub sync</summary>
-    <h2>Tracking</h2>
-    <label>Start (bulugh)<input type="date" id="qs"></label>
-    <label>End<input type="date" id="qe"></label>
-    <label>Qada prayers per day (for the estimate)<input type="number" id="qg" min="1" max="200" step="1" inputmode="numeric"></label>
-    <h2>GitHub sync</h2>
-    <label>GitHub username<input id="gu" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="yourname"></label>
-    <label>Data repository (private)<input id="gr" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-data"></label>
-    <label>Branch<input id="gb" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="main"></label>
-    <label>File path<input id="gp" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="qada-progress.json"></label>
-    <label>Fine-grained access token<input id="gt" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="github_pat_..."></label>
-    <p class="msg" id="smsg"></p>
-    <div class="row"><button id="bsave">Save settings</button><button id="bdis">Disconnect</button></div>
-    <h2>Backup</h2>
-    <div class="row"><button id="bexp">Download backup</button><button id="bimp">Restore backup</button></div>
-    <input type="file" id="fimp" accept="application/json,.json" style="display:none">
-    <div class="row"><button id="breset" style="color:var(--err)">Reset all progress</button></div>
-    <p class="note">Your token is stored only on this device. Never put it in this file or in any repository.</p>
-  </details></div>
 </main>
 
 <script>
-const NAMES=['Fajr','Dhuhr','Asr','Maghrib','Isha','Witr'];
-const RAKAHS=[2,4,4,3,4,3];
-const PER_DAY=6;
-const DATA_KEY='qada_data_v1',CFG_KEY='qada_cfg_v1',DIRTY_KEY='qada_dirty_v1';
-const fresh=()=>({v:1,start:'2012-06-07',end:'2022-12-31',goal:12,done:0,log:{},hist:[],updatedAt:0});
+const NAMES=['Fajr','Dhuhr','Asr','Maghrib','Isha','Witr'],RAK=[2,4,4,3,4,3];
+const LUNAR=354.367,MIN_AGE={hanafi:{m:12,f:9},hanbali:{m:10,f:9},shafii:{m:9,f:9},maliki:{m:9,f:9}};
+const SET_F=['name','gender','birth','basis','start','end','mode','witr','period','nifas','goal'];
+const PROG_F=['done','counts','log','hist'];
+const STORE='qada_solo_v3',CFG='qada_cfg_v3',PATH='qada-progress.json';
 const $=id=>document.getElementById(id);
 const num=n=>Math.round(n).toLocaleString();
 
-function readJSON(k,d){try{const r=localStorage.getItem(k);return Object.assign(d,r?JSON.parse(r):{})}catch(e){return d}}
-let S=readJSON(DATA_KEY,fresh());
-let C=readJSON(CFG_KEY,{owner:'',repo:'',branch:'main',path:'qada-progress.json',token:''});
-let dirty=false;try{dirty=localStorage.getItem(DIRTY_KEY)==='1'}catch(e){}
-let sha=null,busy=false,again=false,timer=null,retry=null,rev=0;
+function ls(k,d){try{const r=localStorage.getItem(k);return r?JSON.parse(r):d}catch(e){return d}}
+let L=Object.assign({m:null,dirty:false},ls(STORE,{}));
+let C=Object.assign({owner:'',repo:'',branch:'main',token:''},ls(CFG,{}));
+let sha,busy=false,again=null,timer=null,retry=null,rev=0,tab='me';
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(L))}catch(e){}}
+function saveCfg(){try{localStorage.setItem(CFG,JSON.stringify(C))}catch(e){}}
 
-function save(){try{localStorage.setItem(DATA_KEY,JSON.stringify(S));localStorage.setItem(DIRTY_KEY,dirty?'1':'0')}catch(e){}}
+/* ---------- Dates and totals ---------- */
 function ud(s){const p=s.split('-');return Date.UTC(+p[0],p[1]-1,+p[2])}
-function days(){return Math.round((ud(S.end)-ud(S.start))/864e5)+1}
+function iso(ms){return new Date(ms).toISOString().slice(0,10)}
 function dayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmtDate(ms){return new Date(ms).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}
-
-function streak(){let c=0;const d=new Date();if(!S.log[dayKey(d)])d.setDate(d.getDate()-1);while(S.log[dayKey(d)]>0){c++;d.setDate(d.getDate()-1)}return c}
-
-function draw(){
-  const D=days(),T=D*PER_DAY;if(S.done>T)S.done=T;
-  const R=T-S.done,p=T?S.done/T*100:0;
-  $('mr').textContent=num(R);
-  $('md').textContent=num(S.done)+' / '+num(T);
-  $('bar').style.width=p+'%';
-  $('mp').textContent=p.toFixed(1)+'% complete';
-  const di=Math.floor(S.done/PER_DAY),pi=S.done%PER_DAY;
-  if(R===0){$('nx').textContent='All made up';$('nd').textContent='May Allah accept it from you.'}
-  else{$('nx').textContent=NAMES[pi];$('nd').textContent=RAKAHS[pi]+" rak'ahs · day "+num(di+1)+' of '+num(D)+' · '+fmtDate(ud(S.start)+di*864e5)}
-  $('dots').innerHTML=NAMES.map((n,i)=>'<div class="dot'+(R===0||i<pi?' done':i===pi?' now':'')+'">'+n+'</div>').join('');
-  $('bday').textContent=pi===0?'Full day (6)':'Finish this day ('+(PER_DAY-pi)+')';
-  $('td').textContent=num(S.log[dayKey(new Date())]||0);
-  $('sk').textContent=num(streak());
-  const g=Math.ceil(R/S.goal),e=new Date();e.setDate(e.getDate()+g);
-  $('fd').textContent=R===0?'Done':e.toLocaleDateString(undefined,{month:'long',year:'numeric'})+' · '+num(g)+' days at '+S.goal+'/day';
+function startFrom(birth,g,basis){return iso(ud(birth)+Math.round(MIN_AGE[basis][g]*LUNAR)*864e5)}
+function stats(m){
+  const D=Math.max(0,Math.round((ud(m.end)-ud(m.start))/864e5)+1);
+  const E=m.gender==='f'?Math.min(D,Math.round((m.period||0)*D/30.4375)+(m.nifas||0)):0;
+  const Deff=D-E,P=m.witr?6:5,T=Deff*P;
+  const done=m.mode==='flexible'?m.counts.slice(0,P).reduce((a,c)=>a+Math.min(c,Deff),0):Math.min(m.done,T);
+  return{D,E,Deff,P,T,done,R:T-done};
 }
-
-function fill(){$('qs').value=S.start;$('qe').value=S.end;$('qg').value=S.goal;$('gu').value=C.owner;$('gr').value=C.repo;$('gb').value=C.branch;$('gp').value=C.path;$('gt').value=C.token}
-function msg(t,isErr){const el=$('smsg');el.textContent=t;el.style.color=isErr?'var(--err)':'var(--muted)'}
-
-function change(n,record){
-  const T=days()*PER_DAY;
-  n=Math.max(-S.done,Math.min(n,T-S.done));
-  if(!n)return;
-  S.done+=n;
-  const k=dayKey(new Date());S.log[k]=Math.max(0,(S.log[k]||0)+n);
-  if(record){S.hist.push(n);if(S.hist.length>300)S.hist.shift()}
-  touch();
+function streak(m){let c=0;const d=new Date();if(!m.log[dayKey(d)])d.setDate(d.getDate()-1);while(m.log[dayKey(d)]>0){c++;d.setDate(d.getDate()-1)}return c}
+function countsOf(m){
+  if(m.mode==='flexible')return m.counts.slice();
+  const P=m.witr?6:5,d=Math.floor(m.done/P),r=m.done%P;
+  return NAMES.map((_,i)=>i<P?d+(i<r?1:0):0);
 }
-function touch(){S.updatedAt=Date.now();dirty=true;rev++;save();draw();schedule()}
+function applyCounts(m,c){
+  m.counts=c.slice();
+  const P=m.witr?6:5,d=Math.min(...c.slice(0,P));let k=0;
+  while(k<P&&c[k]>d)k++;
+  m.done=d*P+k;
+}
+function norm(m){
+  m=Object.assign({name:'',gender:'m',birth:'',basis:'custom',start:'2012-01-01',end:'2012-01-01',mode:'ordered',witr:true,period:0,nifas:0,goal:12,done:0,counts:[0,0,0,0,0,0],log:{},hist:[],setAt:0,progAt:0},m||{});
+  if(!Array.isArray(m.counts)||m.counts.length!==6)m.counts=[0,0,0,0,0,0];
+  return m;
+}
+if(L.m)L.m=norm(L.m);
 
-$('b1').onclick=()=>change(1,true);
-$('bday').onclick=()=>change(PER_DAY-(S.done%PER_DAY),true);
-$('bu').onclick=()=>{const n=S.hist.pop();change(-(n||1),false)};
+/* ---------- Marking ---------- */
+function markDirty(){L.dirty=true;rev++;persist();schedule()}
+function logIt(m,n){const k=dayKey(new Date());m.log[k]=Math.max(0,(m.log[k]||0)+n)}
+function touchProg(m){if(m.hist.length>300)m.hist.shift();m.progAt=Date.now();markDirty();render()}
+function addOrdered(n){
+  const m=L.m;if(!m)return;const s=stats(m);m.done=Math.min(m.done,s.T);
+  n=Math.max(-m.done,Math.min(n,s.T-m.done));if(!n)return;
+  m.done+=n;logIt(m,n);if(n>0)m.hist.push(n);touchProg(m);
+}
+function addFlex(ids){
+  const m=L.m;if(!m)return;const s=stats(m);
+  const did=ids.filter(i=>i<s.P&&m.counts[i]<s.Deff);if(!did.length)return;
+  did.forEach(i=>m.counts[i]++);logIt(m,did.length);m.hist.push(did);touchProg(m);
+}
+function undo(){
+  const m=L.m;if(!m)return;const h=m.hist.pop();
+  if(m.mode==='flexible'){if(!Array.isArray(h))return;h.forEach(i=>{if(m.counts[i]>0)m.counts[i]--});logIt(m,-h.length)}
+  else{const k=Math.min(typeof h==='number'?h:1,m.done);if(!k)return;m.done-=k;logIt(m,-k)}
+  touchProg(m);
+}
+$('b1').onclick=()=>addOrdered(1);
+$('bday').onclick=()=>{const m=L.m;if(!m)return;const s=stats(m);addOrdered(s.P-(s.done%s.P))};
+$('bu').onclick=undo;$('fu').onclick=undo;
+$('fday').onclick=()=>{const m=L.m;if(m)addFlex(NAMES.slice(0,stats(m).P).map((_,i)=>i))};
+$('rows').onclick=e=>{const b=e.target.closest('button');if(b)addFlex([+b.dataset.i])};
 
 /* ---------- GitHub sync ---------- */
 const cfgOk=()=>!!(C.owner&&C.repo&&C.token);
-function apiUrl(){return 'https://api.github.com/repos/'+encodeURIComponent(C.owner)+'/'+encodeURIComponent(C.repo)+'/contents/'+C.path.split('/').map(encodeURIComponent).join('/')}
-function ghHeaders(){return{'Authorization':'Bearer '+C.token,'Accept':'application/vnd.github+json'}}
+function url(p){return 'https://api.github.com/repos/'+encodeURIComponent(C.owner)+'/'+encodeURIComponent(C.repo)+'/contents/'+p}
+function hdrs(x){return Object.assign({'Authorization':'Bearer '+C.token,'Accept':'application/vnd.github+json'},x||{})}
 function b64e(s){const b=new TextEncoder().encode(s);let r='';for(let i=0;i<b.length;i+=32768)r+=String.fromCharCode.apply(null,b.subarray(i,i+32768));return btoa(r)}
 function b64d(s){const bin=atob(s.replace(/\s/g,''));const b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);return new TextDecoder().decode(b)}
 function setStatus(t,kind){const el=$('sync');el.textContent=t;el.style.color=kind==='err'?'var(--err)':kind==='warn'?'var(--warn)':'var(--muted)'}
+function timeNow(){return new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
 
-async function getRemote(){
-  const r=await fetch(apiUrl()+'?ref='+encodeURIComponent(C.branch),{headers:ghHeaders(),cache:'no-store'});
-  if(r.status===404)return{data:null,sha:null};
+async function ghGet(){
+  const r=await fetch(url(PATH)+'?ref='+encodeURIComponent(C.branch),{headers:hdrs(),cache:'no-store'});
+  if(r.status===404)return null;
   if(!r.ok)throw new Error(String(r.status));
-  const j=await r.json();
-  return{data:JSON.parse(b64d(j.content)),sha:j.sha};
+  return r.json();
 }
-function adoptIfNewer(d){
-  if(d&&(d.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),d);dirty=false;save();fill();draw();return true}
-  return false;
+function merge(loc,rem){
+  if(!loc)return{out:rem,push:false};
+  if(!rem)return{out:loc,push:true};
+  const out=Object.assign({},rem);let push=false;
+  if((loc.setAt||0)>(rem.setAt||0)){SET_F.forEach(f=>out[f]=loc[f]);out.setAt=loc.setAt;push=true}
+  if((loc.progAt||0)>(rem.progAt||0)){PROG_F.forEach(f=>out[f]=loc[f]);out.progAt=loc.progAt;push=true}
+  return{out,push};
 }
-function synced(){
-  busy=false;
-  setStatus('Saved to GitHub '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}));
-  if(again){again=false;if(dirty)push()}
+function adoptRemote(j){
+  const r=merge(L.m,norm(JSON.parse(b64d(j.content))));
+  L.m=r.out;L.dirty=r.push;persist();
+  if(!$('details').contains(document.activeElement))fillDetails();
+  render();return r.push;
+}
+async function pull(){
+  const j=await ghGet();sha=j?j.sha:null;
+  if(j)adoptRemote(j);else if(L.m){L.dirty=true;persist()}
+}
+async function push(){
+  if(!L.m||!L.dirty)return;
+  for(let i=0;i<2;i++){
+    const sent=rev;
+    if(sha===undefined){const j=await ghGet();sha=j?j.sha:null;if(j&&!adoptRemote(j))return}
+    const body={message:'Qada progress update',content:b64e(JSON.stringify(L.m)),branch:C.branch};
+    if(sha)body.sha=sha;
+    const r=await fetch(url(PATH),{method:'PUT',headers:hdrs({'Content-Type':'application/json'}),body:JSON.stringify(body)});
+    if(r.ok){sha=(await r.json()).content.sha;if(rev===sent)L.dirty=false;else again=again||'push';persist();return}
+    if((r.status===409||r.status===422)&&i===0){sha=undefined;continue}
+    throw new Error(String(r.status));
+  }
 }
 function failed(e){
-  busy=false;const m=e&&e.message;
-  if(m==='401')setStatus('Token rejected. Check settings','err');
-  else if(m==='403')setStatus('Token has no access to the repo','err');
+  const m=e&&e.message;
+  if(m==='401')setStatus('Key rejected. Check Settings','err');
+  else if(m==='403')setStatus('Key has no access to the repo','err');
   else if(m==='404')setStatus('Repo or branch not found','err');
   else{
     setStatus(navigator.onLine?'Sync failed. Retrying soon':'Offline. Saved on this phone','warn');
-    clearTimeout(retry);retry=setTimeout(()=>{dirty?push():pull(false)},30000);
+    clearTimeout(retry);retry=setTimeout(()=>runSync('pull'),30000);
   }
 }
-function schedule(){if(!cfgOk())return;setStatus('Saving…');clearTimeout(timer);timer=setTimeout(push,1500)}
-
-async function push(){
-  if(!cfgOk()||!dirty)return;
-  if(busy){again=true;return}
-  busy=true;setStatus('Saving…');
-  try{
-    if(sha===null){const g=await getRemote();sha=g.sha;if(adoptIfNewer(g.data))return synced()}
-    for(let i=0;i<2;i++){
-      const sentRev=rev;
-      const body={message:'Qada progress: '+S.done+' made up',content:b64e(JSON.stringify(S)),branch:C.branch};
-      if(sha)body.sha=sha;
-      const r=await fetch(apiUrl(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders()),body:JSON.stringify(body)});
-      if(r.ok){
-        sha=(await r.json()).content.sha;
-        if(rev===sentRev){dirty=false;save()}else again=true;
-        return synced();
-      }
-      if((r.status===409||r.status===422)&&i===0){const g=await getRemote();sha=g.sha;if(adoptIfNewer(g.data))return synced();continue}
-      throw new Error(String(r.status));
-    }
-  }catch(e){failed(e)}
-}
-
-async function pull(connecting){
-  if(!cfgOk()||busy)return;
-  if(dirty&&!connecting)return push();
+async function runSync(kind){
+  if(!cfgOk())return;
+  if(busy){if(kind==='pull'||!again)again=kind;return}
   busy=true;setStatus('Syncing…');
   try{
-    const g=await getRemote();sha=g.sha;
-    if(connecting&&g.data&&g.data.done!==S.done){
-      const useRemote=confirm("GitHub has "+num(g.data.done)+" made up and this phone has "+num(S.done)+".\n\nOK = use the GitHub copy\nCancel = keep this phone's copy and upload it");
-      if(useRemote){S=Object.assign(fresh(),g.data);dirty=false;save();fill();draw();return synced()}
-      S.updatedAt=Date.now();dirty=true;rev++;save();busy=false;return push();
-    }
-    if(adoptIfNewer(g.data))return synced();
-    if(!g.data||(S.updatedAt||0)>(g.data.updatedAt||0)){dirty=true;save();busy=false;return push()}
-    synced();
+    if(kind==='pull')await pull();
+    await push();
+    setStatus(L.m?'Saved to GitHub '+timeNow():'Connected to GitHub');
   }catch(e){failed(e)}
+  busy=false;
+  if(again){const k=again;again=null;runSync(k)}
+}
+function schedule(){
+  if(!cfgOk()){setStatus('Saved on this phone · not connected');return}
+  setStatus('Saving…');clearTimeout(timer);timer=setTimeout(()=>runSync('push'),1500);
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')runSync('pull');else if(L.dirty)runSync('push')});
+window.addEventListener('online',()=>runSync('pull'));
+
+/* ---------- Switching repositories safely ---------- */
+function switchTo(c){
+  const same=c.owner===C.owner&&c.repo===C.repo;
+  if(!same&&C.repo&&L.m){
+    const warn=L.dirty?' Changes not yet saved to GitHub will be lost.':'';
+    if(!confirm('This phone is set up for "'+C.repo+'". Switch to "'+c.repo+'"? The current record will be removed from this phone (it stays in GitHub).'+warn))return false;
+    L={m:null,dirty:false};persist();fillDetails();
+  }
+  C=c;saveCfg();sha=undefined;return true;
 }
 
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull(false);else if(dirty)push()});
-window.addEventListener('online',()=>{dirty?push():pull(false)});
+/* ---------- Rendering ---------- */
+function render(){
+  ['me','set'].forEach(t=>{$('t-'+t).classList.toggle('on',tab===t);$('v-'+t).classList.toggle('hide',tab!==t)});
+  const has=!!L.m;
+  if(tab==='me'&&!has)$('slot-me').appendChild($('details'));
+  if(tab==='set'&&has)$('slot-set').appendChild($('details'));
+  $('details').classList.toggle('hide',(tab==='me'&&has)||(tab==='set'&&!has));
+  $('welcome').classList.toggle('hide',has);
+  $('mine').classList.toggle('hide',!has);
+  $('d-save').textContent=has?'Save changes':'Start tracking';
+  if(has&&tab==='me')renderMe();
+}
+function renderMe(){
+  const m=L.m,s=stats(m),p=s.T?s.done/s.T*100:0;
+  $('mename').textContent=m.name?'Assalamu alaikum, '+m.name:'';
+  $('mr').textContent=num(s.R);$('md').textContent=num(s.done)+' / '+num(s.T);
+  $('bar').style.width=p+'%';
+  $('mp').textContent=p.toFixed(1)+'% complete'+(s.E?' · '+num(s.E)+' days excluded':'');
+  const ord=m.mode!=='flexible';
+  $('ordered').classList.toggle('hide',!ord);$('flex').classList.toggle('hide',ord);
+  if(ord){
+    const di=Math.floor(s.done/s.P),pi=s.done%s.P,names=NAMES.slice(0,s.P);
+    if(s.R===0){$('nx').textContent='All made up';$('nd').textContent='May Allah accept it.'}
+    else{$('nx').textContent=names[pi];$('nd').textContent=RAK[pi]+" rak'ahs · day "+num(di+1)+' of '+num(s.Deff)+(s.E?'':' · '+fmtDate(ud(m.start)+di*864e5))}
+    $('dots').style.gridTemplateColumns='repeat('+s.P+',1fr)';
+    $('dots').innerHTML=names.map((n,i)=>'<div class="dot'+(s.R===0||i<pi?' done':i===pi?' now':'')+'">'+n+'</div>').join('');
+    $('bday').textContent=pi===0?'Full day ('+s.P+')':'Finish this day ('+(s.P-pi)+')';
+  }else{
+    $('rows').innerHTML=NAMES.slice(0,s.P).map((n,i)=>{const c=Math.min(m.counts[i],s.Deff);return '<div class="prow"><span style="font-weight:600">'+n+'</span><div class="pbar"><div style="width:'+(s.Deff?c/s.Deff*100:0)+'%"></div></div><span class="l" style="text-align:right">'+num(c)+' / '+num(s.Deff)+'</span><button data-i="'+i+'" aria-label="Add one '+n+'">+1</button></div>'}).join('');
+    $('fday').textContent='Full day (all '+s.P+')';
+  }
+  $('td').textContent=num(m.log[dayKey(new Date())]||0);
+  $('sk').textContent=num(streak(m));
+  const g=Math.ceil(s.R/(m.goal||1)),e=new Date();e.setDate(e.getDate()+g);
+  $('fd').textContent=s.R===0?'Done':e.toLocaleDateString(undefined,{month:'long',year:'numeric'})+' · '+num(g)+' days at '+m.goal+'/day';
+}
+['me','set'].forEach(t=>$('t-'+t).onclick=()=>{tab=t;if(t==='set'){fillCfg();fillDetails()}render()});
 
-/* ---------- Settings ---------- */
-['qs','qe','qg','gu','gr','gb','gp','gt'].forEach(id=>$(id).addEventListener('input',()=>msg('')));
-$('bsave').onclick=()=>{
-  const s=$('qs').value,e=$('qe').value,g=parseInt($('qg').value,10);
-  if(!s||!e||ud(e)<ud(s))return msg('Pick an end date on or after the start date.',true);
-  if(!(g>=1))return msg('Enter at least 1 prayer per day.',true);
-  const o=$('gu').value.trim(),r=$('gr').value.trim(),t=$('gt').value.trim();
-  if((o||r||t)&&!(o&&r&&t))return msg('Fill in username, repository and token to connect, or leave all three empty.',true);
-  if(s!==S.start||e!==S.end||g!==S.goal){S.start=s;S.end=e;S.goal=g;touch()}
-  const wasConnected=cfgOk();
-  C={owner:o,repo:r,branch:$('gb').value.trim()||'main',path:$('gp').value.trim()||'qada-progress.json',token:t};
-  try{localStorage.setItem(CFG_KEY,JSON.stringify(C))}catch(x){}
-  fill();sha=null;
-  if(cfgOk()){msg('Settings saved.');setStatus('Connecting…');pull(!wasConnected)}
-  else{msg('Settings saved. GitHub sync is off.');setStatus('Not connected')}
+/* ---------- Details form ---------- */
+function fillDetails(){
+  const m=L.m||{name:'',gender:'m',birth:'',basis:'hanafi',start:'',end:'',mode:'ordered',witr:true,period:0,nifas:0,goal:12};
+  $('d-name').value=m.name||'';$('d-gender').value=m.gender;$('d-birth').value=m.birth;$('d-basis').value=m.basis;
+  $('d-start').value=m.start;$('d-end').value=m.end;$('d-mode').value=m.mode;$('d-witr').checked=!!m.witr;
+  $('d-period').value=m.period||0;$('d-nifas').value=m.nifas||0;$('d-goal').value=m.goal||12;
+  $('d-msg').textContent='';updateDetails();
+}
+function readDetails(){
+  return{name:$('d-name').value.trim(),gender:$('d-gender').value,birth:$('d-birth').value,basis:$('d-basis').value,
+    start:$('d-start').value,end:$('d-end').value,mode:$('d-mode').value,witr:$('d-witr').checked,
+    period:Math.max(0,parseInt($('d-period').value,10)||0),nifas:Math.max(0,parseInt($('d-nifas').value,10)||0),
+    goal:parseInt($('d-goal').value,10)};
+}
+function updateDetails(){
+  const v=readDetails();
+  $('d-women').classList.toggle('hide',v.gender!=='f');
+  const auto=v.basis!=='custom';
+  $('d-start').readOnly=auto;
+  if(auto&&v.birth){$('d-start').value=startFrom(v.birth,v.gender,v.basis);v.start=$('d-start').value}
+  if(v.start&&v.end&&ud(v.end)>=ud(v.start)){
+    const s=stats(Object.assign({counts:[0,0,0,0,0,0],done:0},v));
+    $('d-total').textContent='Starts '+fmtDate(ud(v.start))+'. You owe '+num(s.T)+' prayers over '+num(s.Deff)+' days'+(s.E?' ('+num(s.E)+' days excluded)':'')+'.';
+  }else $('d-total').textContent='';
+}
+['d-name','d-gender','d-birth','d-basis','d-start','d-end','d-mode','d-witr','d-period','d-nifas','d-goal'].forEach(id=>{
+  $(id).addEventListener('input',()=>{$('d-msg').textContent='';updateDetails()});
+  $(id).addEventListener('change',updateDetails);
+});
+$('d-save').onclick=()=>{
+  const v=readDetails(),err=t=>{$('d-msg').textContent=t;$('d-msg').style.color='var(--err)'};
+  if(v.basis!=='custom'&&!v.birth)return err('Enter your date of birth, or choose "I\'ll pick the start date".');
+  if(!v.start)return err('Enter a start date.');
+  if(!v.end)return err('Enter the end date.');
+  if(ud(v.end)<ud(v.start))return err('The end date must be on or after the start date.');
+  if(!(v.goal>=1))return err('Enter at least 1 qada prayer per day.');
+  if(v.gender==='f'&&v.period>15)return err('Period days per month can be at most 15.');
+  if(v.gender!=='f'){v.period=0;v.nifas=0}
+  const now=Date.now(),first=!L.m;let m;
+  if(L.m){
+    const old=L.m,c=countsOf(old);
+    m=Object.assign({},old,v);
+    if(old.mode!==v.mode||old.witr!==v.witr){applyCounts(m,c);m.hist=[];m.progAt=now}
+  }else m=norm(v);
+  m.setAt=now;L.m=m;markDirty();
+  if(first)tab='me';else{$('d-msg').textContent='Saved.';$('d-msg').style.color='var(--muted)'}
+  render();
 };
-$('bdis').onclick=()=>{C.token='';try{localStorage.setItem(CFG_KEY,JSON.stringify(C))}catch(x){}fill();sha=null;setStatus('Not connected');msg('Disconnected. Progress stays on this phone.')};
 
+/* ---------- Settings actions ---------- */
+function fillCfg(){$('gu').value=C.owner;$('gr').value=C.repo;$('gb').value=C.branch;$('gt').value=C.token;if(!$('iu').value)$('iu').value=C.owner}
+function showMsg(id,t,isErr){$(id).textContent=t;$(id).style.color=isErr?'var(--err)':'var(--muted)'}
+['gu','gr','gb','gt'].forEach(id=>$(id).addEventListener('input',()=>showMsg('smsg','')));
+$('gsave').onclick=()=>{
+  const c={owner:$('gu').value.trim(),repo:$('gr').value.trim(),branch:$('gb').value.trim()||'main',token:$('gt').value.trim()};
+  if(!(c.owner&&c.repo&&c.token))return showMsg('smsg','Fill in username, repository and key.',true);
+  if(!switchTo(c))return fillCfg();
+  fillCfg();showMsg('smsg','Saved. Connecting…');render();runSync('pull');
+};
+$('gdis').onclick=()=>{C.token='';saveCfg();sha=undefined;fillCfg();setStatus('Saved on this phone · not connected');showMsg('smsg','Disconnected. Your record stays on this phone.')};
+
+function makeCode(c){return b64e(JSON.stringify({o:c.owner,r:c.repo,b:c.branch||'main',t:c.token}))}
+function decodeInvite(text){
+  const mt=String(text).match(/join=([^&\s]+)/);const code=decodeURIComponent(mt?mt[1]:String(text).trim());
+  const o=JSON.parse(b64d(code));if(!o.o||!o.r||!o.t)throw new Error('bad');
+  return{owner:o.o,repo:o.r,branch:o.b||'main',token:o.t};
+}
+$('invjoin').onclick=()=>{
+  let c;try{c=decodeInvite($('invin').value)}catch(e){return showMsg('jmsg',"That invite didn't work. Check it was copied in full.",true)}
+  if(!switchTo(c))return;
+  $('invin').value='';fillCfg();showMsg('jmsg','Joined. Syncing…');render();runSync('pull');
+};
+$('imake').onclick=()=>{
+  const c={owner:$('iu').value.trim(),repo:$('ir').value.trim(),branch:'main',token:$('it').value.trim()};
+  if(!(c.owner&&c.repo&&c.token))return showMsg('imsg','Fill in the username, their repository and their key.',true);
+  const link=location.origin+location.pathname+'#join='+encodeURIComponent(makeCode(c));
+  $('iout').value=link;$('iout').classList.remove('hide');$('it').value='';
+  if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>showMsg('imsg','Invite link for '+c.repo+' copied.'),()=>showMsg('imsg','Copy the link from the box above.'));
+  else showMsg('imsg','Copy the link from the box above.');
+};
 $('bexp').onclick=()=>{
+  if(!L.m)return;
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(L.m,null,1)],{type:'application/json'}));
   a.download='qada-backup-'+dayKey(new Date())+'.json';
   document.body.appendChild(a);a.click();a.remove();
 };
-$('bimp').onclick=()=>$('fimp').click();
-$('fimp').onchange=async ev=>{
-  const f=ev.target.files[0];if(!f)return;
-  try{const d=JSON.parse(await f.text());if(typeof d.done!=='number')throw 0;S=Object.assign(fresh(),d);fill();touch();msg('Backup restored.')}
-  catch(x){msg("That file isn't a valid backup.",true)}
-  ev.target.value='';
-};
-$('breset').onclick=()=>{
-  if(!confirm("Erase all progress? This can't be undone."))return;
-  const keep={start:S.start,end:S.end,goal:S.goal};
-  S=Object.assign(fresh(),keep);touch();msg('Progress reset.');
-};
+
+/* ---------- Invite link on open ---------- */
+(function(){
+  if(!/join=/.test(location.hash))return;
+  try{
+    const c=decodeInvite(location.hash);
+    if(c.owner!==C.owner||c.repo!==C.repo||c.token!==C.token)switchTo(c);
+  }catch(e){}
+})();
 
 /* ---------- Home screen icon ---------- */
 (function(){try{
@@ -275,8 +463,8 @@ $('breset').onclick=()=>{
   const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL('image/png');document.head.appendChild(l);
 }catch(e){}})();
 
-fill();draw();
-if(cfgOk())pull(false);
+fillDetails();fillCfg();render();
+if(cfgOk())runSync('pull');else setStatus('Saved on this phone · not connected');
 </script>
 </body>
 </html>
